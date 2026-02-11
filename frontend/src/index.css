@@ -1,0 +1,118 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+:root {
+  --base-font: 16px;
+  --bg-main: #d2d4d8;
+  --bg-card: #ffffff;
+  --text-primary: #111111;
+  --text-secondary: #555555;
+  --border-color: #e5e7eb;
+  --accent: #ffd700;
+  --income-color: #10b981;
+  --expense-color: #ef4444;
+  --reserved-color: #8b5cf6;
+  --balance-color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light;
+  color: #1a1a1a;
+  background-color: #fafafa;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: var(--bg-main);
+  color: var(--text-primary);
+  font-size: var(--base-font);
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.accent-text {
+  color: var(--accent);
+}
+
+/* Dark theme variables */
+body.dark {
+  --bg-main: #0f1115;
+  --bg-card: #1a1d23;
+  --text-primary: #f1f5f9;
+  --text-secondary: #9ca3af;
+  --border-color: #2a2f3a;
+  --income-color: #34d399;
+  --expense-color: #f87171;
+  --reserved-color: #a78bfa;
+  --balance-color: var(--text-primary);
+}
+
+/* Page container */
+.page-container {
+  background: var(--bg-main);
+  color: var(--text-primary);
+}
+
+/* Cards and stats */
+.content-card,
+.summary-card,
+.card,
+.stat-card {
+  background: var(--bg-card);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+.content-card p,
+.card p {
+  color: var(--text-secondary);
+}
+
+/* Tables */
+table {
+  background: var(--bg-card);
+  color: var(--text-primary);
+}
+thead {
+  background: rgba(255,255,255,0.05);
+}
+body.dark thead {
+  background: #232834;
+}
+th {
+  color: var(--text-secondary);
+}
+td {
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* Sidebar & header */
+body.dark .dash-sidebar {
+  background: #0b0d12;
+}
+body.dark .sidebar-item {
+  color: var(--text-secondary);
+}
+body.dark .sidebar-item.active {
+  background: #1f2937;
+  color: #facc15;
+}
