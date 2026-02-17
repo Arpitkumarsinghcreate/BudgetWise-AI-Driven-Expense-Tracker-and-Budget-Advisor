@@ -2,8 +2,10 @@ import { useState } from "react";
 import AuthLayout from "../components/AuthLayout";
 import { forgotPasswordInit, forgotPasswordVerify } from "../api/auth";
 import "../components/Auth.css";
+import { useNavigate } from "react-router-dom";
 
 export default function ForgotPassword() {
+  const navigate = useNavigate();
   const [step, setStep] = useState("init");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
@@ -53,6 +55,7 @@ export default function ForgotPassword() {
     try {
       await forgotPasswordVerify({ email, otp, newPassword });
       setSuccess("Password reset successful. Please login.");
+      navigate("/login");
     } catch (err) {
       setError(err.message);
     } finally {
@@ -144,16 +147,21 @@ export default function ForgotPassword() {
             </div>
             {error && <p className="auth-error">{error}</p>}
             {success && <p className="auth-success">{success}</p>}
-            <button type="submit" className={`auth-button ${isLoading ? "loading" : ""}`} disabled={isLoading}>
-              {isLoading ? (
-                <>
-                  <span className="spinner"></span>
-                  Resetting...
-                </>
-              ) : (
-                "Reset Password"
-              )}
-            </button>
+            <div className="auth-actions">
+              <button type="submit" className={`auth-button ${isLoading ? "loading" : ""}`} disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <span className="spinner"></span>
+                    Resetting...
+                  </>
+                ) : (
+                  "Reset Password"
+                )}
+              </button>
+              <button type="button" className="auth-button secondary" onClick={() => navigate("/login")}>
+                Cancel
+              </button>
+            </div>
           </form>
         )}
       </div>

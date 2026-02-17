@@ -56,7 +56,7 @@ export default function Dashboard() {
     totalExpense: 0,
     balance: 0,
     reservedBalance: 0,
-    trend: [],
+    dailyTrend: [],
     categoryBreakdown: {}
   });
 
@@ -88,7 +88,7 @@ export default function Dashboard() {
           totalExpense: Number(s.totalExpense || 0),
           balance: Number(s.balance || 0),
           reservedBalance: Number(s.reservedBalance || 0),
-          trend: Array.isArray(s.trend) ? s.trend : [],
+          dailyTrend: Array.isArray(s.dailyTrend) ? s.dailyTrend : [],
           categoryBreakdown: s.categoryBreakdown || {}
         });
       })
@@ -516,29 +516,7 @@ export default function Dashboard() {
               </div>
             </div>
 
-            <div className="d-flex flex-column gap-3">
-              <div className="content-card p-3">
-                <h3 className="h6 mb-3">Quick Actions</h3>
-                <div className="d-grid gap-2">
-                  <button className="quick-action-btn primary w-100 justify-content-center" onClick={openAddExpense}>
-                    Add Transaction
-                  </button>
-                  <button className="quick-action-btn w-100 justify-content-center">
-                    Generate Report
-                  </button>
-                </div>
-              </div>
-              
-              <div className="content-card p-3">
-                <h3 className="h6 mb-3">AI Insights</h3>
-                <p className="text-muted small">Add more expenses to generate insights.</p>
-              </div>
-
-              <div className="content-card p-3">
-                <h3 className="h6 mb-2">AI Suggestions</h3>
-                <p className="text-muted small">You could save ₹800 this month by reducing food orders.</p>
-              </div>
-            </div>
+            {/* Side panel removed per requirement */}
           </div>
         )}
 

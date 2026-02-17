@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import DashboardLayout from "../components/DashboardLayout";
 import { Button, Form } from "react-bootstrap";
 import { fetchProfile, updateProfile, uploadPhoto } from "../api/users";
+import { useNavigate } from "react-router-dom";
 
 export default function ProfilePage() {
+  const navigate = useNavigate();
   const email = localStorage.getItem("userEmail") || "";
   const initial = JSON.parse(localStorage.getItem(`userSettings_${email}`) || "{}");
   const [form, setForm] = useState({
@@ -73,6 +75,7 @@ export default function ProfilePage() {
         setForm(next);
         localStorage.setItem(`userSettings_${email}`, JSON.stringify({ ...initial, ...next }));
         localStorage.setItem("userName", next.name);
+        navigate("/dashboard");
       })
       .catch(err => setError(err.message || "Failed to save"))
       .finally(() => setSaving(false));
@@ -119,7 +122,7 @@ export default function ProfilePage() {
             <Form.Control as="textarea" rows={3} name="bio" value={form.bio} onChange={onChange} />
           </Form.Group>
           <div className="d-flex justify-content-end gap-2">
-            <Button variant="secondary">Cancel</Button>
+            <Button variant="secondary" onClick={() => navigate("/dashboard")}>Cancel</Button>
             <Button variant="primary" onClick={save} disabled={saving}>{saving ? "Saving..." : "Save"}</Button>
           </div>
         </div>
