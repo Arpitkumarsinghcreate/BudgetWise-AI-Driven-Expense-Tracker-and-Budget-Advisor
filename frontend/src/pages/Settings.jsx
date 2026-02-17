@@ -9,7 +9,6 @@ export default function Settings() {
   const [tab, setTab] = useState("general");
   const userId = Number(localStorage.getItem("userId") || 0);
   const [dateFormat, setDateFormat] = useState("YYYY-MM-DD");
-  const [language, setLanguage] = useState("en");
   const [theme, setTheme] = useState("light");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -23,11 +22,9 @@ export default function Settings() {
     fetchSettings({ userId })
       .then(s => {
         setDateFormat(s.dateFormat || "YYYY-MM-DD");
-        setLanguage(s.language || "en");
         const t = (s.themeMode || "LIGHT").toLowerCase();
         setTheme(t);
         localStorage.setItem("dateFormat", s.dateFormat || "YYYY-MM-DD");
-        localStorage.setItem("language", s.language || "en");
         localStorage.setItem("theme", t);
       })
       .catch(err => setError(err.message || "Failed to load settings"))
@@ -37,10 +34,9 @@ export default function Settings() {
   const saveGeneral = () => {
     setLoading(true);
     setError("");
-    updateSettings({ userId, data: { dateFormat, language } })
+    updateSettings({ userId, data: { dateFormat } })
       .then(s => {
         localStorage.setItem("dateFormat", s.dateFormat || dateFormat);
-        localStorage.setItem("language", s.language || language);
       })
       .catch(err => setError(err.message || "Failed to save general settings"))
       .finally(() => setLoading(false));
@@ -54,11 +50,8 @@ export default function Settings() {
       .then(s => {
         const savedTheme = (s.themeMode || themeMode).toLowerCase();
         setTheme(savedTheme);
-        const effective = savedTheme === "system"
-          ? (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
-          : savedTheme;
+        const effective = savedTheme;
         document.body.classList.toggle("dark", effective === "dark");
-        document.documentElement.lang = (localStorage.getItem("language") || language) === "hi" ? "hi-IN" : "en-IN";
         localStorage.setItem("theme", savedTheme);
       })
       .catch(err => setError(err.message || "Failed to save appearance"))
@@ -78,9 +71,6 @@ export default function Settings() {
             <Nav.Item>
               <Nav.Link active={tab === "appearance"} onClick={() => setTab("appearance")}>Appearance</Nav.Link>
             </Nav.Item>
-            <Nav.Item>
-              <Nav.Link active={tab === "data"} onClick={() => setTab("data")}>Data Management</Nav.Link>
-            </Nav.Item>
           </Nav>
 
           <div className="flex-grow-1">
@@ -94,13 +84,6 @@ export default function Settings() {
                       <option value="YYYY-MM-DD">YYYY-MM-DD</option>
                       <option value="DD/MM/YYYY">DD/MM/YYYY</option>
                       <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                    </Form.Select>
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Label>Language</Form.Label>
-                    <Form.Select value={language} onChange={e => setLanguage(e.target.value)}>
-                      <option value="en">English</option>
-                      <option value="hi">Hindi</option>
                     </Form.Select>
                   </Form.Group>
                 </div>
@@ -120,7 +103,6 @@ export default function Settings() {
                     <Form.Select value={theme} onChange={e => setTheme(e.target.value)}>
                       <option value="light">Light</option>
                       <option value="dark">Dark</option>
-                      <option value="system">System</option>
                     </Form.Select>
                   </Form.Group>
                 </div>
@@ -130,12 +112,6 @@ export default function Settings() {
               </div>
             )}
 
-            {tab === "data" && (
-              <div>
-                <h3 className="h6 mb-3">Data Management</h3>
-                <p className="text-muted">Future: export/import data, clear cache, etc.</p>
-              </div>
-            )}
           </div>
         </div>
       </div>
