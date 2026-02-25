@@ -22,6 +22,9 @@ export default function Signup() {
   const [step, setStep] = useState("form");
   const [otp, setOtp] = useState("");
   const [apiError, setApiError] = useState("");
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMsg, setResendMsg] = useState("");
+  const [showResend, setShowResend] = useState(false);
 
   // Handle input changes with validation
   const handleChange = (e) => {
@@ -84,6 +87,7 @@ export default function Signup() {
         password: formData.password,
       });
       setStep("otp");
+      setShowResend(false);
     } catch (err) {
       setApiError(err.message);
     } finally {
@@ -101,18 +105,41 @@ export default function Signup() {
     setIsLoading(true);
     try {
       await signupVerify({ email: formData.email, otp });
+      // Obtain JWT token; require it before proceeding
+      const tokenResp = await loginToken({ email: formData.email, password: formData.password });
+      const token = tokenResp?.token;
+      if (!token) {
+        setApiError("Failed to obtain session token. Please login again.");
+        return;
+      }
+      localStorage.setItem("authToken", token);
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("userName", formData.name);
       localStorage.setItem("userEmail", formData.email);
-      try {
-        const { token } = await loginToken({ email: formData.email, password: formData.password });
-        if (token) localStorage.setItem("authToken", token);
-      } catch { void 0; }
       navigate("/dashboard");
     } catch (err) {
       setApiError(err.message);
+      setShowResend(true);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const resendOtp = async () => {
+    setResendMsg("");
+    setApiError("");
+    setResendLoading(true);
+    try {
+      await signupInit({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
+      setResendMsg("OTP resent to your email.");
+    } catch (err) {
+      setApiError(err.message || "Failed to resend OTP");
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -295,6 +322,7 @@ export default function Signup() {
               />
             </div>
             {apiError && <p className="auth-error">{apiError}</p>}
+            {showResend && resendMsg && <p className="auth-success">{resendMsg}</p>}
             <button
               type="submit"
               className={`auth-button ${isLoading ? "loading" : ""}`}
@@ -309,18 +337,26 @@ export default function Signup() {
                 "Verify OTP"
               )}
             </button>
+            {showResend && (
+              <button
+                type="button"
+                className={`auth-button secondary ${resendLoading ? "loading" : ""}`}
+                style={{ marginTop: "0.75rem" }}
+                onClick={resendOtp}
+                disabled={resendLoading}
+              >
+                {resendLoading ? (
+                  <>
+                    <span className="spinner"></span>
+                    Resending...
+                  </>
+                ) : (
+                  "Resend OTP"
+                )}
+              </button>
+            )}
           </form>
         )}
-
-        <div className="auth-divider">
-          <span>Or continue with</span>
-        </div>
-
-        <div className="social-buttons">
-          <button type="button" className="social-button">
-            Google
-          </button>
-        </div>
 
         <p className="auth-footer">
           Already have an account?{" "}

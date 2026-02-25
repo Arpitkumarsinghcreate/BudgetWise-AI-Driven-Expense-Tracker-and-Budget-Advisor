@@ -21,6 +21,8 @@ public class AIInsightsService {
 
     @Autowired
     private TransactionRepository transactionRepository;
+    @Autowired
+    private BudgetTargetService budgetTargetService;
 
     public AIInsightsResponse getInsights(Long userId, YearMonth month) {
         LocalDate start = month.atDay(1);
@@ -76,12 +78,27 @@ public class AIInsightsService {
                 : warnings.get(0).getPercent();
         int score = clamp(0, 100, (int) Math.round(60 + savingsRate.doubleValue()/2 - maxCatPercent.doubleValue()/2));
 
+        BigDecimal target = budgetTargetService.getTarget(userId, month);
+        BigDecimal progressPct = BigDecimal.ZERO;
+        if (target != null && target.compareTo(BigDecimal.ZERO) > 0) {
+            progressPct = savings.multiply(BigDecimal.valueOf(100)).divide(target, 2, RoundingMode.HALF_UP);
+            if (progressPct.compareTo(BigDecimal.valueOf(100)) < 0) {
+                BigDecimal gap = target.subtract(savings).max(BigDecimal.ZERO);
+                suggestions.add("Save ₹" + gap.setScale(0, RoundingMode.HALF_UP) + " more to reach your budget target");
+            } else {
+                suggestions.add("Budget target reached for this month");
+            }
+        }
+
         AIInsightsResponse resp = new AIInsightsResponse();
         resp.setSavingsRate(savingsRate);
         resp.setHealthScore(score);
         resp.setMonthOverMonth(mom);
         resp.setWarnings(warnings);
         resp.setSuggestions(suggestions);
+        resp.setBudgetTarget(target);
+        resp.setBudgetSaved(savings);
+        resp.setBudgetProgressPercent(progressPct);
         return resp;
     }
 

@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import DashboardLayout from "../components/DashboardLayout";
-import { ProgressBar } from "react-bootstrap";
+import { ProgressBar, Modal, Button, Form } from "react-bootstrap";
 import { fetchInsights } from "../api/ai";
+import { setBudgetTarget } from "../api/budget";
 
 export default function AIInsights() {
   const [loading, setLoading] = useState(false);
@@ -16,16 +17,18 @@ export default function AIInsights() {
 
   const [filterMonth, setFilterMonth] = useState(new Date().getMonth().toString());
   const [filterYear, setFilterYear] = useState(new Date().getFullYear().toString());
+  const [showBudgetModal, setShowBudgetModal] = useState(false);
+  const [targetInput, setTargetInput] = useState("");
+  const monthStr = `${filterYear}-${String(Number(filterMonth)+1).padStart(2,"0")}`;
 
   useEffect(() => {
     setLoading(true);
     setError("");
-    const monthStr = `${filterYear}-${String(Number(filterMonth)+1).padStart(2,"0")}`;
     fetchInsights({ month: monthStr })
       .then(setData)
       .catch(err => setError(err.message || "Failed to load insights"))
       .finally(() => setLoading(false));
-  }, [filterMonth, filterYear]);
+  }, [filterMonth, filterYear, monthStr]);
 
   const months = [
     "January", "February", "March", "April", "May", "June",
@@ -81,6 +84,23 @@ export default function AIInsights() {
       </div>
 
       <div className="content-card">
+        <div className="d-flex justify-content-between align-items-center">
+          <h3 className="h6 mb-2">Budget Target Progress</h3>
+          <Button variant="outline-primary" size="sm" onClick={() => { setTargetInput(String(Number(data.budgetTarget || 0))); setShowBudgetModal(true); }}>
+            Set Budget Target
+          </Button>
+        </div>
+        <div className="text-muted small">
+          Target: ₹ {Number(data.budgetTarget || 0).toLocaleString("en-IN")} | Saved: ₹ {Number(data.budgetSaved || 0).toLocaleString("en-IN")} ({Number(data.budgetProgressPercent || 0)}%)
+        </div>
+        <ProgressBar
+          now={Number(data.budgetProgressPercent || 0)}
+          label={`${Number(data.budgetProgressPercent || 0)}%`}
+          className="mt-2"
+        />
+      </div>
+
+      <div className="content-card">
         <h3 className="h6 mb-2">Recommendations</h3>
         {Array.isArray(data.suggestions) && data.suggestions.length > 0 ? (
           <ul className="mb-0">
@@ -90,6 +110,45 @@ export default function AIInsights() {
           <p className="text-muted mb-0">No suggestions at this time</p>
         )}
       </div>
+
+      <Modal show={showBudgetModal} onHide={() => setShowBudgetModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Set Monthly Budget Target ({months[filterMonth]} {filterYear})</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group>
+              <Form.Label>Target Amount (₹)</Form.Label>
+              <Form.Control
+                type="number"
+                min="0"
+                value={targetInput}
+                onChange={(e) => setTargetInput(e.target.value)}
+                placeholder="e.g., 50000"
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowBudgetModal(false)}>Cancel</Button>
+          <Button
+            variant="primary"
+            onClick={async () => {
+              try {
+                const amt = Number(targetInput || 0);
+                await setBudgetTarget({ month: monthStr, amount: amt });
+                const updated = await fetchInsights({ month: monthStr });
+                setData(updated);
+                setShowBudgetModal(false);
+              } catch (e) {
+                setError(e.message || "Failed to set budget target");
+              }
+            }}
+          >
+            Save Target
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </DashboardLayout>
   );
 }

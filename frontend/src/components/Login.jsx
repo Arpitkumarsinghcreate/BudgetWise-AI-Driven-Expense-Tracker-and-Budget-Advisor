@@ -17,6 +17,9 @@ export default function Login() {
   const [error, setError] = useState("");
   const [step, setStep] = useState("form");
   const [otp, setOtp] = useState("");
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendMsg, setResendMsg] = useState("");
+  const [showResend, setShowResend] = useState(false);
 
   const handleChange = (e) => {
     setFormData({
@@ -53,6 +56,7 @@ export default function Login() {
     try {
       await loginInit({ email: formData.email, password: formData.password });
       setStep("otp");
+      setShowResend(false);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -69,24 +73,43 @@ export default function Login() {
     setIsLoading(true);
     try {
       await loginVerify({ email: formData.email, otp });
+      // Obtain JWT token; require it before proceeding
+      const tokenResp = await loginToken({ email: formData.email, password: formData.password });
+      const token = tokenResp?.token;
+      if (!token) {
+        setError("Failed to obtain session token. Please re-enter your password.");
+        return;
+      }
+      localStorage.setItem("authToken", token);
       localStorage.setItem("isLoggedIn", "true");
       localStorage.setItem("userEmail", formData.email);
       try {
         const me = await fetchMe({ email: formData.email });
         if (me?.name) localStorage.setItem("userName", me.name);
         if (me?.id) localStorage.setItem("userId", String(me.id));
-      } catch { void 0; }
-      try {
-        const { token } = await loginToken({ email: formData.email, password: formData.password });
-        if (token) localStorage.setItem("authToken", token);
-      } catch { void 0; }
+      } catch { /* ignore profile prefetch errors */ }
       navigate("/dashboard");
     } catch (err) {
       setError(err.message);
+      setShowResend(true);
     } finally {
       setIsLoading(false);
     }
 
+  };
+
+  const resendOtp = async () => {
+    setResendMsg("");
+    setError("");
+    setResendLoading(true);
+    try {
+      await loginInit({ email: formData.email, password: formData.password });
+      setResendMsg("OTP resent to your email.");
+    } catch (err) {
+      setError(err.message || "Failed to resend OTP");
+    } finally {
+      setResendLoading(false);
+    }
   };
 
   return (
@@ -201,6 +224,7 @@ export default function Login() {
               />
             </div>
             {error && <p className="auth-error">{error}</p>}
+            {showResend && resendMsg && <p className="auth-success">{resendMsg}</p>}
             <button
               type="submit"
               className={`auth-button ${isLoading ? "loading" : ""}`}
@@ -215,18 +239,26 @@ export default function Login() {
                 "Verify OTP"
               )}
             </button>
+            {showResend && (
+              <button
+                type="button"
+                className={`auth-button secondary ${resendLoading ? "loading" : ""}`}
+                style={{ marginTop: "0.75rem" }}
+                onClick={resendOtp}
+                disabled={resendLoading}
+              >
+                {resendLoading ? (
+                  <>
+                    <span className="spinner"></span>
+                    Resending...
+                  </>
+                ) : (
+                  "Resend OTP"
+                )}
+              </button>
+            )}
           </form>
         )}
-
-        <div className="auth-divider">
-          <span>Or continue with</span>
-        </div>
-
-        <div className="social-buttons">
-          <button className="social-button">
-            Google
-          </button>
-        </div>
 
         <p className="auth-footer">
           New here?{" "}

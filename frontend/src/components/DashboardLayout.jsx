@@ -20,6 +20,7 @@ export default function DashboardLayout({ children }) {
     { label: "Reserved Transactions", path: "/reserved", icon: LockIcon },
     { label: "Statistics", path: "/statistics", icon: ChartIcon },
     { label: "AI Insights", path: "/ai", icon: RobotIcon },
+    { label: "AI Chat", path: "/ai/chat", icon: RobotIcon },
     { label: "Settings", path: "/settings", icon: GearIcon },
   ];
 

@@ -9,6 +9,9 @@ public class AIInsightsResponse {
     private String monthOverMonth;
     private List<SpendingWarning> warnings;
     private List<String> suggestions;
+    private BigDecimal budgetTarget;
+    private BigDecimal budgetSaved;
+    private BigDecimal budgetProgressPercent;
 
     public BigDecimal getSavingsRate() {
         return savingsRate;
@@ -48,5 +51,29 @@ public class AIInsightsResponse {
 
     public void setSuggestions(List<String> suggestions) {
         this.suggestions = suggestions;
+    }
+
+    public BigDecimal getBudgetTarget() {
+        return budgetTarget;
+    }
+
+    public void setBudgetTarget(BigDecimal budgetTarget) {
+        this.budgetTarget = budgetTarget;
+    }
+
+    public BigDecimal getBudgetSaved() {
+        return budgetSaved;
+    }
+
+    public void setBudgetSaved(BigDecimal budgetSaved) {
+        this.budgetSaved = budgetSaved;
+    }
+
+    public BigDecimal getBudgetProgressPercent() {
+        return budgetProgressPercent;
+    }
+
+    public void setBudgetProgressPercent(BigDecimal budgetProgressPercent) {
+        this.budgetProgressPercent = budgetProgressPercent;
     }
 }

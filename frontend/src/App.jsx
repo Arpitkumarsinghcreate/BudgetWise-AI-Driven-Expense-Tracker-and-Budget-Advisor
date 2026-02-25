@@ -7,13 +7,15 @@ import Dashboard from "./pages/Dashboard";
 import Transactions from "./pages/Transactions";
 import ReservedTransactions from "./pages/ReservedTransactions";
 import AIInsights from "./pages/AIInsights";
+import AIChat from "./pages/AIChat";
 import Settings from "./pages/Settings";
 import ProfilePage from "./pages/ProfilePage";
 import Statistics from "./pages/Statistics";
 
 const ProtectedRoute = ({ children }) => {
   const isAuth = localStorage.getItem("isLoggedIn") === "true";
-  return isAuth ? children : <Navigate to="/login" />;
+  const hasToken = !!localStorage.getItem("authToken");
+  return (isAuth && hasToken) ? children : <Navigate to="/login" />;
 };
 
 function App() {
@@ -62,6 +64,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AIInsights />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ai/chat"
+          element={
+            <ProtectedRoute>
+              <AIChat />
             </ProtectedRoute>
           }
         />

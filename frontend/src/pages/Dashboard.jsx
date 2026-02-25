@@ -151,7 +151,9 @@ export default function Dashboard() {
   const uniqueExpenseDays = Array.isArray(summary.dailyTrend) ? summary.dailyTrend.filter(d => Number(d.expense || 0) > 0).length : 0;
   const averageDailySpend = uniqueExpenseDays > 0 ? Math.round(stats.totalExpenses / uniqueExpenseDays) : 0;
   const remainingBudget = userProfile.monthlyIncome ? Math.max(0, Number(userProfile.monthlyIncome) - stats.totalExpenses) : 0;
-  const topCategory = Object.keys(expenseCategories).sort((a, b) => (expenseCategories[b] || 0) - (expenseCategories[a] || 0))[0] || "—";
+  const topCategory = expenseCategoriesList.length > 0
+    ? (expenseCategoriesList[0].category || "—")
+    : (Object.keys(expenseCategories).sort((a, b) => (expenseCategories[b] || 0) - (expenseCategories[a] || 0))[0] || "—");
 
   const trendLabels = Array.isArray(summary.dailyTrend) ? summary.dailyTrend.map(p => String(new Date(p.date).getDate())) : [];
   const trendDataValues = Array.isArray(summary.dailyTrend) ? summary.dailyTrend.map(p => Number(p.expense || 0)) : [];
