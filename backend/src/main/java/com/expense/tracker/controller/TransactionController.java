@@ -29,10 +29,13 @@ public class TransactionController {
     }
 
     @GetMapping
-    public ResponseEntity<List<TransactionResponse>> listByMonth(@RequestParam("month") String month) {
+    public ResponseEntity<List<TransactionResponse>> list(@RequestParam(value = "month", required = false) String month) {
         Long userId = com.expense.tracker.security.SecurityUtils.getCurrentUserId();
-        YearMonth ym = YearMonth.parse(month);
-        return ResponseEntity.ok(transactionService.getTransactionsByMonth(userId, ym));
+        if (month != null && !month.isBlank()) {
+            YearMonth ym = YearMonth.parse(month);
+            return ResponseEntity.ok(transactionService.getTransactionsByMonth(userId, ym));
+        }
+        return ResponseEntity.ok(transactionService.getAllByUser(userId));
     }
 
     @GetMapping("/report")

@@ -40,7 +40,12 @@ public class TransactionService {
     public List<TransactionResponse> getTransactionsByMonth(Long userId, YearMonth month) {
         LocalDate start = month.atDay(1);
         LocalDate end = month.atEndOfMonth();
-        return transactionRepository.findByUserIdAndDateBetween(userId, start, end)
+        return transactionRepository.findByUserIdAndDateBetweenOrderByDateDesc(userId, start, end)
+                .stream().map(this::toResponse).collect(Collectors.toList());
+    }
+
+    public List<TransactionResponse> getAllByUser(Long userId) {
+        return transactionRepository.findByUserIdOrderByDateDesc(userId)
                 .stream().map(this::toResponse).collect(Collectors.toList());
     }
 

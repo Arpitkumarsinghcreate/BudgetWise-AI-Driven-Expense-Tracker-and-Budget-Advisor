@@ -13,6 +13,8 @@ import java.util.Optional;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
     List<Transaction> findByUserIdAndDateBetween(Long userId, LocalDate startDate, LocalDate endDate);
+    List<Transaction> findByUserIdOrderByDateDesc(Long userId);
+    List<Transaction> findByUserIdAndDateBetweenOrderByDateDesc(Long userId, LocalDate startDate, LocalDate endDate);
     List<Transaction> findByUserIdAndIsReservedTrueAndStatus(Long userId, TransactionStatus status);
     List<Transaction> findByUserIdAndIsReservedTrue(Long userId);
     List<Transaction> findByUserIdAndIsReservedTrueAndDateBetween(Long userId, LocalDate startDate, LocalDate endDate);

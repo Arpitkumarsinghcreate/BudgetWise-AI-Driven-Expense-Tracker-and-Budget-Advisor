@@ -2,7 +2,7 @@ import { useMemo, useEffect, useState } from "react";
 import DashboardLayout from "../components/DashboardLayout";
 import { Button, Form } from "react-bootstrap";
 import ExpenseModal from "../components/ExpenseModal";
-import { listByMonth, addTransaction } from "../api/transactions";
+import { list, addTransaction } from "../api/transactions";
 import { fetchMonthlyReport } from "../api/reports";
 
 export default function Transactions() {
@@ -26,15 +26,17 @@ export default function Transactions() {
     return `${y}-${m}-${day}`;
   };
 
+  const [selectedMonth, setSelectedMonth] = useState("all");
+
   useEffect(() => {
-    const month = new Date().toISOString().slice(0, 7);
     setLoading(true);
     setError("");
-    listByMonth({ month })
+    const load = selectedMonth === "all" ? list({}) : list({ month: selectedMonth });
+    load
       .then(setTransactions)
       .catch(err => setError(err.message || "Failed to load"))
       .finally(() => setLoading(false));
-  }, []);
+  }, [selectedMonth]);
 
   const filteredStats = useMemo(() => {
     const stats = transactions.reduce((acc, t) => {
@@ -68,7 +70,7 @@ export default function Transactions() {
   const openEdit = (t) => { setEditingTransaction(t); setShowExpenseModal(true); };
 
   const downloadReport = async () => {
-    const month = new Date().toISOString().slice(0, 7);
+    const month = (selectedMonth === "all" ? new Date().toISOString().slice(0, 7) : selectedMonth);
     try {
       setError("");
       setExporting(true);
@@ -102,7 +104,10 @@ export default function Transactions() {
       return;
     }
     addTransaction({ form: t })
-      .then(() => listByMonth({ month: new Date().toISOString().slice(0,7) }).then(setTransactions))
+      .then(() => {
+        const reload = selectedMonth === "all" ? list({}) : list({ month: selectedMonth });
+        return reload.then(setTransactions);
+      })
       .catch(err => setError(err.message || "Failed to save"))
       .finally(() => {
         setLoading(false);
@@ -147,6 +152,15 @@ export default function Transactions() {
         {error && <div className="alert alert-danger py-2">{error}</div>}
         {loading && <div className="text-muted small mb-2">Loading...</div>}
         <div className="d-flex gap-3 align-items-end mb-3">
+          <Form.Group>
+            <Form.Label>Month</Form.Label>
+            <Form.Select value={selectedMonth} onChange={e => setSelectedMonth(e.target.value)}>
+              <option value="all">All Months</option>
+              {Array.from(new Set(transactions.map(t => t.date.slice(0,7)))).sort().reverse().map(m => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </Form.Select>
+          </Form.Group>
           <Form.Group>
             <Form.Label>Sort by</Form.Label>
             <Form.Select value={sortBy} onChange={e => setSortBy(e.target.value)}>

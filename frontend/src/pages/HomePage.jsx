@@ -174,6 +174,7 @@ export default function HomePage() {
                 <p className="phone-greeting">Hello, Tell us your name 👋</p>
                 <div className="phone-summary">
                   <span>Summary</span>
+                  <span>Transaction</span>
                   <span className="phone-date">Last 30 days ⏏</span>
                 </div>
               </div>
@@ -235,7 +236,7 @@ export default function HomePage() {
               <div className="feature-content">
                 <h3>Smart Expense Categorization</h3>
                 <p>
-                  Automatically categorize your expenses using AI technology
+                  Categorize your expenses
                 </p>
               </div>
             </div>
@@ -256,8 +257,8 @@ export default function HomePage() {
             <div className="feature-item">
               <div className="feature-number">04</div>
               <div className="feature-content">
-                <h3>Multi-Currency Support</h3>
-                <p>Track expenses in multiple currencies seamlessly</p>
+                <h3>Future expense Support</h3>
+                <p>Hold the Amount for future expenses</p>
               </div>
             </div>
           </div>

@@ -25,10 +25,15 @@ export async function addTransaction({ form }) {
   return mapTransaction(res.data);
 }
 
-export async function listByMonth({ month }) {
-  const res = await client.get("/api/transactions", { params: { month } });
+export async function list({ month }) {
+  const config = month ? { params: { month } } : undefined;
+  const res = await client.get("/api/transactions", config);
   const items = res.data;
   return Array.isArray(items) ? items.map(mapTransaction) : [];
+}
+
+export async function listByMonth({ month }) {
+  return list({ month });
 }
 
 export async function listReserved({ month }) {

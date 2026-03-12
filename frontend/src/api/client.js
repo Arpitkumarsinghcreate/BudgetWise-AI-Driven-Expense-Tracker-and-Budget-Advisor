@@ -9,8 +9,7 @@ client.interceptors.request.use((config) => {
   if (url.startsWith("/api/auth")) return config;
   const token = localStorage.getItem("authToken");
   if (!token) {
-    if (typeof window !== "undefined") window.location.href = "/login";
-    return Promise.reject(new axios.Cancel("Missing auth token"));
+    return Promise.reject(new Error("Missing auth token"));
   }
   config.headers = { ...(config.headers || {}), Authorization: `Bearer ${token}` };
   return config;
@@ -19,9 +18,7 @@ client.interceptors.request.use((config) => {
 client.interceptors.response.use(
   (res) => res,
   (err) => {
-    if (err?.response?.status === 401) {
-      if (typeof window !== "undefined") window.location.href = "/login";
-    }
+    // Do not auto-redirect on 401; let pages handle and show error banners
     return Promise.reject(err);
   }
 );
