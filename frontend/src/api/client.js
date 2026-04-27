@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const client = axios.create({
-  baseURL: "https://budgetwise-ai-production.up.railway.app",
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 client.interceptors.request.use((config) => {
