@@ -11,8 +11,8 @@ export default function DashboardLayout({ children }) {
   const userEmail = localStorage.getItem("userEmail") || "";
   const userSettings = JSON.parse(localStorage.getItem(`userSettings_${userEmail}`) || "{}");
   const photo = (userSettings.photo && userSettings.photo.startsWith("/uploads/"))
-    ? `http://localhost:8080${userSettings.photo}`
-    : (userSettings.photo || "");
+  ? `${import.meta.env.VITE_API_URL}${userSettings.photo}`
+  : (userSettings.photo || "");
 
   const menu = [
     { label: "Dashboard", path: "/dashboard", icon: DashboardIcon },
