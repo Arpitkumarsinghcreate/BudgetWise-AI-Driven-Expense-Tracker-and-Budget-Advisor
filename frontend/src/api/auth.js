@@ -1,70 +1,34 @@
-const BASE_URL = "http://localhost:8080/api/auth";
+import client from "./client";
 
-async function post(path, body) {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+// Signup
+export const signupInit = ({ name, email, password }) =>
+  client.post("/api/auth/signup/init", { name, email, password });
+
+export const signupVerify = ({ email, otp }) =>
+  client.post("/api/auth/signup/verify", { email, otp });
+
+// Login
+export const loginInit = ({ email, password }) =>
+  client.post("/api/auth/login/init", { email, password });
+
+export const loginVerify = ({ email, otp }) =>
+  client.post("/api/auth/login/verify", { email, otp });
+
+// Forgot Password
+export const forgotPasswordInit = ({ email }) =>
+  client.post("/api/auth/forgot-password/init", { email });
+
+export const forgotPasswordVerify = ({ email, otp, newPassword }) =>
+  client.post("/api/auth/forgot-password/verify", {
+    email,
+    otp,
+    newPassword,
   });
-  const text = await res.text();
-  if (!res.ok) {
-    throw new Error(text || "Request failed");
-  }
-  return text;
-}
 
-async function postJson(path, body) {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
-  const data = await res.json().catch(() => null);
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(text || "Request failed");
-  }
-  return data;
-}
+// Fetch user
+export const fetchMe = ({ email }) =>
+  client.post("/api/auth/me", { email });
 
-export function signupInit({ name, email, password }) {
-  return post("/signup/init", { name, email, password });
-}
-
-export function signupVerify({ email, otp }) {
-  return post("/signup/verify", { email, otp });
-}
-
-export function loginInit({ email, password }) {
-  return post("/login/init", { email, password });
-}
-
-export function loginVerify({ email, otp }) {
-  return post("/login/verify", { email, otp });
-}
-
-export function forgotPasswordInit({ email }) {
-  return post("/forgot-password/init", { email });
-}
-
-export function forgotPasswordVerify({ email, otp, newPassword }) {
-  return post("/forgot-password/verify", { email, otp, newPassword });
-}
-
-export function fetchMe({ email }) {
-  return postJson("/me", { email });
-}
-
-export async function loginToken({ email, password }) {
-  const res = await fetch(`${BASE_URL}/token`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password }),
-  });
-  const data = await res.json().catch(() => null);
-  if (!res.ok) {
-    const text = await res.text().catch(() => "");
-    throw new Error(text || "Login failed");
-  }
-  return data; // { token }
-}
+// Token login
+export const loginToken = ({ email, password }) =>
+  client.post("/api/auth/token", { email, password });
