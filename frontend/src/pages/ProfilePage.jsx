@@ -27,7 +27,7 @@ export default function ProfilePage() {
         const toAbsolute = (url) =>
   url && url.startsWith("/uploads/")
     ? `${import.meta.env.VITE_API_URL}${url}`
-    : url:
+    : url;
         const next = {
           name: p.name || form.name,
           email: p.email || email,
@@ -53,7 +53,10 @@ export default function ProfilePage() {
     setSaving(true);
     uploadPhoto({ file })
       .then(p => {
-        const toAbsolute = (url) => (url && url.startsWith("/uploads/")) ? `${import.meta.env.VITE_API_URL}${url}`;
+        const toAbsolute = (url) =>
+  url && url.startsWith("/uploads/")
+    ? `${import.meta.env.VITE_API_URL}${url}`
+    : url;
         const next = { ...form, photo: toAbsolute(p.profileImageUrl) || form.photo };
         setForm(next);
         localStorage.setItem(`userSettings_${email}`, JSON.stringify({ ...initial, ...next }));
@@ -67,7 +70,10 @@ export default function ProfilePage() {
     setError("");
     updateProfile({ data: { name: form.name, contact: form.contact, bio: form.bio } })
       .then(p => {
-        const toAbsolute = (url) => (url && url.startsWith("/uploads/")) ? `${import.meta.env.VITE_API_URL}${url}`;
+        const toAbsolute = (url) =>
+  url && url.startsWith("/uploads/")
+    ? `${import.meta.env.VITE_API_URL}${url}`
+    : url;
         const next = {
           name: p.name,
           email: p.email,
