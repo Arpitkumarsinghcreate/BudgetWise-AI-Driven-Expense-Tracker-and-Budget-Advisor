@@ -27,7 +27,7 @@ export default function ProfilePage() {
         const toAbsolute = (url) =>
   url && url.startsWith("/uploads/")
     ? `${import.meta.env.VITE_API_URL}${url}`
-    : url;
+    : url:
         const next = {
           name: p.name || form.name,
           email: p.email || email,
